@@ -2,9 +2,26 @@ function hello(){
   console.log("hello");
   close();
 }
-w(hello);
+// w(hello);
 
+function world() {
+  console.log("world");
+}
 
+w(world, hello, function world_hello(){
+  world();
+  hello();
+})
+
+const something = "hello world";
+function log() {
+  console.log(something);
+  close();
+}
+
+w(`const something = "${something}";`, log);
+
+w(withContext({ something }), log);
 
 c = new Channel();
 c.push("hello world")

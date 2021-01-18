@@ -1,13 +1,21 @@
-function toBlob(func) {
-  return new Blob([func.toString(), `${func.name}();`], {type:'text/javascript'});
+function toBlob(funcs) {
+  const func = funcs[funcs.length - 1];
+  return new Blob([
+    ...funcs.map(f => f.toString()),
+    `${func.name}();`
+  ], {type:'text/javascript'});
 }
 
 function run(blob) {
   return new Worker(URL.createObjectURL(blob));
 }
 
-function w(func) {
-  return run(toBlob(func));
+function w(...funcs) {
+  return run(toBlob(funcs));
+}
+
+function withContext(obj) {
+  return `Object.assign(self, ${JSON.stringify(obj)});`
 }
 
 class Channel {
