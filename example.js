@@ -8,10 +8,10 @@ function world() {
   console.log("world");
 }
 
-w(world, hello, function world_hello(){
+w(function world_hello(){
   world();
   hello();
-})
+})(world, hello);
 
 const something = "hello world";
 function log() {
@@ -19,24 +19,24 @@ function log() {
   close();
 }
 
-w(`const something = "${something}";`, log);
+w(log)(`const something = "${something}";`);
 
-w(withContext({ something }), log);
+w(log)(injectValue({ something }));
 
-c = new Channel();
-c.push("hello world")
-c.push("etc, etc")
-const work = w(async function test(){
-  self.importScripts('http://localhost:8080/w.js')
-  c = new Channel()
-  c.register(self);
-  for await (const m of c) {
-    console.log(m);
+const c = new Channel(w(async function test(){
+  for (var i = 1; i < 10; i++) {
+    self.postMessage({done: false, value: i});
   }
-  close();
-})
-c.register(work);
-c.flush();
-c.push("and more");
-c.flush();
-c.close();
+  self.postMessage({done: true});
+})());
+
+async function test() {
+  for await (const i of c) {
+    console.log(i);
+  }
+  console.log("done");
+}
+
+
+test();
+
